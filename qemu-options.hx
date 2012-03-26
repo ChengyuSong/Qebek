@@ -2598,6 +2598,70 @@ the @var{simple} tracing backend.
 @end table
 ETEXI
 
+DEF("win2k", 0, QEBEK_OPTION_win2k,
+    "-win2k honeypot's OS is Windows 2000", QEMU_ARCH_I386)
+STEXI
+@item -win2k
+@findex -win2k
+Tell Qebek the guest OS is Windows 2000.
+ETEXI
+
+DEF("winxp", 0, QEBEK_OPTION_winxp,
+    "-winxp honeypot's OS is Windows XP [default]", QEMU_ARCH_I386)
+STEXI
+@item -winxp
+@findex -winxp
+Tell Qebek the guest OS is Windows XP. This is the default OS.
+ETEXI
+
+DEF("win2k3", 0, QEBEK_OPTION_win2k3,
+    "-win2k3 honeypot's OS is Windows Server 2003", QEMU_ARCH_I386)
+STEXI
+@item -win2k3
+@findex -win2k3
+Tell Qebek the guest OS is Windows Server 2003.
+ETEXI
+
+DEF("vista", 0, QEBEK_OPTION_vista,
+    "-vista honeypot's OS is Windows Vista", QEMU_ARCH_I386)
+STEXI
+@item -vista
+@findex -vista
+Tell Qebek the guest OS is Windows Vista.
+ETEXI
+
+DEF("win2k8", 0, QEBEK_OPTION_win2k8,
+    "-win2k8 honeypot's OS is Windows Server 2008", QEMU_ARCH_I386)
+STEXI
+@item -win2k8
+@findex -win2k8
+Tell Qebek the guest OS is Windows Server 2008.
+ETEXI
+
+DEF("win7", 0, QEBEK_OPTION_win7,
+    "-win7 honeypot's OS is Windows 7", QEMU_ARCH_I386)
+STEXI
+@item -win7
+@findex -win7
+Tell Qebek the guest OS is Windows 7.
+ETEXI
+
+DEF("sbk_magic", HAS_ARG, QEBEK_OPTION_magic,
+    "-sbk_magic magic number in Sebek header (OPTIONAL)", QEMU_ARCH_I386)
+STEXI
+@item -sbk_magic
+@findex -sbk_magic
+Set the magic number in Sebek header (OPTIONAL).
+ETEXI
+
+DEF("sbk_ip", HAS_ARG, QEBEK_OPTION_ip,
+    "-sbk_ip honeypot's IP address", QEMU_ARCH_I386)
+STEXI
+@item -sbk_ip
+@findex -sbk_ip
+Set the IP of the honeypot.
+ETEXI
+
 HXCOMM This is the last statement. Insert new options before this line!
 STEXI
 @end table

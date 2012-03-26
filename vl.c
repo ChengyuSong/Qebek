@@ -167,6 +167,17 @@ int main(int argc, char **argv)
 
 #include "ui/qemu-spice.h"
 
+/* QEBEK specific */
+#include "qebek-os.h"
+
+#define SEBEK_MAGIC   208 // this is in network order. 0xD0D0D000 in host order on x86
+
+extern uint32_t qebek_g_ip;
+extern uint32_t qebek_g_magic;
+
+extern bool qebek_bpt_init(void);
+extern void qebek_bpt_free(void);
+
 //#define DEBUG_NET
 //#define DEBUG_SLIRP
 
@@ -2223,6 +2234,13 @@ int main(int argc, char **argv, char **envp)
 
     autostart= 1;
 
+    /* Qebek default options */
+    qebek_os_major = QEBEK_OS_windows;
+    qebek_os_minor = QEBEK_OS_winxp;
+
+    qebek_g_magic = SEBEK_MAGIC;
+    qebek_g_ip = inet_addr("127.0.0.1");
+
     /* first pass of option parsing */
     optind = 1;
     while (optind < argc) {
@@ -3057,6 +3075,56 @@ int main(int argc, char **argv, char **envp)
                     fclose(fp);
                     break;
                 }
+
+            /* QEBEK options */
+            case QEBEK_OPTION_win2k:
+                {
+                    qebek_os_major = QEBEK_OS_windows;
+                    qebek_os_minor = QEBEK_OS_win2k;
+                    break;
+                }
+            case QEBEK_OPTION_winxp:
+                {
+                    qebek_os_major = QEBEK_OS_windows;
+                    qebek_os_minor = QEBEK_OS_winxp;
+                    break;
+                }
+            case QEBEK_OPTION_win2k3:
+                {
+                    qebek_os_major = QEBEK_OS_windows;
+                    qebek_os_minor = QEBEK_OS_win2k3;
+                    break;
+                }
+            case QEBEK_OPTION_vista:
+                {
+                    qebek_os_major = QEBEK_OS_windows;
+                    qebek_os_minor = QEBEK_OS_vista;
+                    break;
+                }
+            case QEBEK_OPTION_win2k8:
+                {
+                    qebek_os_major = QEBEK_OS_windows;
+                    qebek_os_minor = QEBEK_OS_win2k8;
+                    break;
+                }
+            case QEBEK_OPTION_win7:
+                {
+                    qebek_os_major = QEBEK_OS_windows;
+                    qebek_os_minor = QEBEK_OS_win7;
+                    break;
+                }
+
+            case QEBEK_OPTION_magic:
+                {
+                    qebek_g_magic = htonl(atoi(optarg));
+                    break;
+                }
+            case QEBEK_OPTION_ip:
+                {
+                    qebek_g_ip = inet_addr(optarg);
+                    break;
+                }
+
             default:
                 os_parse_cmd_args(popt->index, optarg);
             }
@@ -3064,7 +3132,13 @@ int main(int argc, char **argv, char **envp)
     }
     loc_set_none();
 
-    /* Open the logfile at this point, if necessary. We can't open the logfile
+    /* Initialize Qebek breakpoint system */
+    if (!qebek_bpt_init()) {
+        fprintf(stderr, "Cannot initialize Qebek breakpoit table.\n");
+        exit(1);
+    }
+
+	/* Open the logfile at this point, if necessary. We can't open the logfile
      * when encountering either of the logging options (-d or -D) because the
      * other one may be encountered later on the command line, changing the
      * location or level of logging.
@@ -3487,6 +3561,8 @@ int main(int argc, char **argv, char **envp)
     pause_all_vcpus();
     net_cleanup();
     res_free();
+
+    qebek_bpt_free();
 
     return 0;
 }

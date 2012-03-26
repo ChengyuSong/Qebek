@@ -1,5 +1,9 @@
 #!/bin/sh
 #
+# qebek configure script (c) 2010 Chengyu Song
+#
+# based on
+#
 # qemu configure script (c) 2003 Fabrice Bellard
 #
 # set temporary file name
@@ -11,9 +15,9 @@ else
     TMPDIR1="/tmp"
 fi
 
-TMPC="${TMPDIR1}/qemu-conf-${RANDOM}-$$-${RANDOM}.c"
-TMPO="${TMPDIR1}/qemu-conf-${RANDOM}-$$-${RANDOM}.o"
-TMPE="${TMPDIR1}/qemu-conf-${RANDOM}-$$-${RANDOM}.exe"
+TMPC="${TMPDIR1}/qebek-conf-${RANDOM}-$$-${RANDOM}.c"
+TMPO="${TMPDIR1}/qebek-conf-${RANDOM}-$$-${RANDOM}.o"
+TMPE="${TMPDIR1}/qebek-conf-${RANDOM}-$$-${RANDOM}.exe"
 
 # NB: do not call "exit" in the trap handler; this is buggy with some shells;
 # see <1285349658-3122-1-git-send-email-loic.minier@linaro.org>
@@ -77,7 +81,7 @@ path_of() {
 # default parameters
 source_path=`dirname "$0"`
 cpu=""
-interp_prefix="/usr/gnemul/qemu-%M"
+interp_prefix="/usr/gnemul/qebek-%M"
 static="no"
 sparc_cpu=""
 cross_prefix=""
@@ -125,7 +129,7 @@ vnc_sasl=""
 vnc_jpeg=""
 vnc_png=""
 vnc_thread="no"
-xen=""
+xen="no"
 xen_ctrl_version=""
 linux_aio=""
 attr=""
@@ -145,13 +149,13 @@ mingw32="no"
 EXESUF=""
 prefix="/usr/local"
 mandir="\${prefix}/share/man"
-datadir="\${prefix}/share/qemu"
-docdir="\${prefix}/share/doc/qemu"
+datadir="\${prefix}/share/qebek"
+docdir="\${prefix}/share/doc/qebek"
 bindir="\${prefix}/bin"
 libdir="\${prefix}/lib"
 includedir="\${prefix}/include"
 sysconfdir="\${prefix}/etc"
-confsuffix="/qemu"
+confsuffix="/qebek"
 slirp="yes"
 fmod_lib=""
 fmod_inc=""
@@ -648,10 +652,10 @@ for opt do
   ;;
   --enable-vde) vde="yes"
   ;;
-  --disable-xen) xen="no"
-  ;;
-  --enable-xen) xen="yes"
-  ;;
+#  --disable-xen) xen="no"
+#  ;;
+#  --enable-xen) xen="yes"
+#  ;;
   --disable-brlapi) brlapi="no"
   ;;
   --enable-brlapi) brlapi="yes"
@@ -660,10 +664,10 @@ for opt do
   ;;
   --enable-bluez) bluez="yes"
   ;;
-  --disable-kvm) kvm="no"
-  ;;
-  --enable-kvm) kvm="yes"
-  ;;
+#  --disable-kvm) kvm="no"
+#  ;;
+#  --enable-kvm) kvm="yes"
+#  ;;
   --disable-tcg-interpreter) tcg_interpreter="no"
   ;;
   --enable-tcg-interpreter) tcg_interpreter="yes"
@@ -794,6 +798,10 @@ for opt do
   esac
 done
 
+# Disable KVM and Xen
+kvm="no"
+xen="no"
+
 #
 # If cpu ~= sparc and  sparc_cpu hasn't been defined, plug in the right
 # QEMU_CFLAGS/LDFLAGS (assume sparc_v8plus for 32-bit and sparc_v9 for 64-bit)
@@ -878,66 +886,6 @@ if [ "$softmmu" = "yes" ] ; then
     default_target_list="\
 i386-softmmu \
 x86_64-softmmu \
-alpha-softmmu \
-arm-softmmu \
-cris-softmmu \
-lm32-softmmu \
-m68k-softmmu \
-microblaze-softmmu \
-microblazeel-softmmu \
-mips-softmmu \
-mipsel-softmmu \
-mips64-softmmu \
-mips64el-softmmu \
-ppc-softmmu \
-ppcemb-softmmu \
-ppc64-softmmu \
-sh4-softmmu \
-sh4eb-softmmu \
-sparc-softmmu \
-sparc64-softmmu \
-s390x-softmmu \
-xtensa-softmmu \
-xtensaeb-softmmu \
-"
-fi
-# the following are Linux specific
-if [ "$linux_user" = "yes" ] ; then
-    default_target_list="${default_target_list}\
-i386-linux-user \
-x86_64-linux-user \
-alpha-linux-user \
-arm-linux-user \
-armeb-linux-user \
-cris-linux-user \
-m68k-linux-user \
-microblaze-linux-user \
-microblazeel-linux-user \
-mips-linux-user \
-mipsel-linux-user \
-ppc-linux-user \
-ppc64-linux-user \
-ppc64abi32-linux-user \
-sh4-linux-user \
-sh4eb-linux-user \
-sparc-linux-user \
-sparc64-linux-user \
-sparc32plus-linux-user \
-unicore32-linux-user \
-s390x-linux-user \
-"
-fi
-# the following are Darwin specific
-if [ "$darwin_user" = "yes" ] ; then
-    default_target_list="$default_target_list i386-darwin-user ppc-darwin-user "
-fi
-# the following are BSD specific
-if [ "$bsd_user" = "yes" ] ; then
-    default_target_list="${default_target_list}\
-i386-bsd-user \
-x86_64-bsd-user \
-sparc-bsd-user \
-sparc64-bsd-user \
 "
 fi
 
@@ -953,7 +901,7 @@ echo "  --help                   print this message"
 echo "  --prefix=PREFIX          install in PREFIX [$prefix]"
 echo "  --interp-prefix=PREFIX   where to find shared libraries, etc."
 echo "                           use %M for cpu name [$interp_prefix]"
-echo "  --target-list=LIST       set target list (default: build everything)"
+echo "  --target-list=LIST       set target list (default: i386-softmmu)"
 echo "Available targets: $default_target_list" | \
     fold -s -w 53 | sed -e 's/^/                           /'
 echo ""
@@ -974,7 +922,7 @@ echo "  --mandir=PATH            install man pages in PATH"
 echo "  --datadir=PATH           install firmware in PATH"
 echo "  --docdir=PATH            install documentation in PATH"
 echo "  --bindir=PATH            install binaries in PATH"
-echo "  --sysconfdir=PATH        install config in PATH/qemu"
+echo "  --sysconfdir=PATH        install config in PATH/qebek"
 echo "  --enable-debug-tcg       enable TCG debugging"
 echo "  --disable-debug-tcg      disable TCG debugging (default)"
 echo "  --enable-debug           enable common debug build options"
@@ -1195,7 +1143,7 @@ if test "$guest_agent" != "no" ; then
 fi
 
 if test -z "$target_list" ; then
-    target_list="$default_target_list"
+    target_list="i386-softmmu"
 else
     target_list=`echo "$target_list" | sed -e 's/,/ /g'`
 fi

@@ -1,3 +1,12 @@
-Read the documentation in qemu-doc.html.
+BUILD
 
-Fabrice Bellard.
+./configure
+make
+
+EXAMPLE
+
+qebek -localtime -m 512 -hda winxp.img -snapshot \
+    -net nic,vlan=0.macaddr=00:00:00:00:00:00,model=pcnet \
+    -net tap,vlan=0,ifname=tap0 \
+    -winxp -sbk_ip 192.168.0.1 | sbk_diag.pl
+

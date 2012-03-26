@@ -31,6 +31,9 @@
 #include "softmmu_exec.h"
 #endif /* !defined(CONFIG_USER_ONLY) */
 
+/* For QEBEK, added by Chengyu */
+#include "qebek-hook.h"
+
 //#define DEBUG_PCALL
 
 #ifdef DEBUG_PCALL
@@ -2344,6 +2347,13 @@ void helper_load_seg(int seg_reg, int selector)
         qemu_log("load_seg: sel=0x%04x base=0x%08lx limit=0x%08lx flags=%08x\n",
                 selector, (unsigned long)sc->base, sc->limit, sc->flags);
 #endif
+    
+        //init hooks when FS/GS is ready
+        if (seg_reg == R_FS || seg_reg == R_GS) {
+            if(unlikely(qebek_syscall_init == 0)) {
+                qebek_hook_syscall(env);
+            }
+        }
     }
 }
 
@@ -2980,6 +2990,11 @@ void helper_sysenter(void)
                            DESC_W_MASK | DESC_A_MASK);
     ESP = env->sysenter_esp;
     EIP = env->sysenter_eip;
+
+    if(unlikely(qebek_first_syscall == 1)) {
+        qebek_syscall_init = 0;
+        qebek_first_syscall = 0;
+    }
 }
 
 void helper_sysexit(int dflag)
